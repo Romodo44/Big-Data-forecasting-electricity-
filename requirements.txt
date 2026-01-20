@@ -1,0 +1,11 @@
+kafka-python
+requests
+pandas
+streamlit
+xgboost
+joblib
+pandas
+numpy
+sklearn
+pyarrow
+fastparquet

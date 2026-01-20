@@ -1,0 +1,2 @@
+v1
+{"path":"file:///opt/lakehouse/bronze/weather/part-00000-9079706f-b95e-4c88-bfef-b5653e403c04-c000.snappy.parquet","size":377523,"isDir":false,"modificationTime":1768575553067,"blockReplication":1,"blockSize":33554432,"action":"add"}

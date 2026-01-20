@@ -1,0 +1,2 @@
+v1
+{"path":"file:///opt/lakehouse/bronze/electricity/part-00000-0b8a629a-6f60-4539-b2e5-037d43a7797f-c000.snappy.parquet","size":706345,"isDir":false,"modificationTime":1768575363799,"blockReplication":1,"blockSize":33554432,"action":"add"}
