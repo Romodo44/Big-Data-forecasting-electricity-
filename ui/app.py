@@ -5,6 +5,9 @@ import plotly.graph_objects as go
 
 API_URL = "http://api:8000"
 
+# =====================
+# Page config
+# =====================
 st.set_page_config(
     page_title="Electricity & Weather Dashboard",
     layout="wide"
@@ -63,7 +66,6 @@ if pred_df is not None and not pred_df.empty:
         on="ts_hour",
         how="left"
     )
-
     st.info(f"Predictions start at {start_pred}")
 else:
     st.warning("Predictions not available")
@@ -84,9 +86,43 @@ if pred_df is not None and not pred_df.empty:
     df_plot = df[df["ts_hour"].dt.date == selected_day].copy()
 else:
     df_plot = df.copy()
+    selected_day = df_plot["ts_hour"].dt.date.iloc[-1]
 
 # =====================
-# Plot – real vs prediction (clean & readable)
+# Day context (weekday, weather stats)
+# =====================
+day_dt = pd.to_datetime(selected_day)
+day_name = day_dt.day_name()
+is_weekend = day_dt.dayofweek >= 5
+
+tmin = df_plot["temp_c"].min()
+tmax = df_plot["temp_c"].max()
+tmean = df_plot["temp_c"].mean()
+
+rain_total = df_plot["rain_mm"].sum()
+is_rainy = rain_total > 1.0
+
+# =====================
+# Day summary UI
+# =====================
+st.subheader(
+    f"📅 {day_name} – {selected_day} "
+    f"{'(Weekend)' if is_weekend else '(Weekday)'}"
+)
+
+c1, c2, c3, c4 = st.columns(4)
+
+c1.metric("Temp min", f"{tmin:.1f} °C")
+c2.metric("Temp max", f"{tmax:.1f} °C")
+c3.metric("Temp avg", f"{tmean:.1f} °C")
+
+if is_rainy:
+    c4.metric("Rain", f"{rain_total:.1f} mm")
+else:
+    c4.metric("Rain", "No rain")
+
+# =====================
+# Plot – real vs prediction (clean)
 # =====================
 fig = go.Figure()
 
