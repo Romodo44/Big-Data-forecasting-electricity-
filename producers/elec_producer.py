@@ -3,13 +3,13 @@ import pandas as pd
 import json
 from kafka import KafkaProducer
 
-# Kafka
+
 KAFKA_BOOTSTRAP = "kafka:9092"
 TOPIC = "electricity.events"
 
 ZONE = "FR"
 
-# Source ODRE (celle qui marche chez toi)
+# Source ODRE 
 base_url = (
     "https://odre.opendatasoft.com/api/v2/catalog/datasets/"
     "consommation-quotidienne-brute/exports/csv"

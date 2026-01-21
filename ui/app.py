@@ -5,9 +5,7 @@ import plotly.graph_objects as go
 
 API_URL = "http://api:8000"
 
-# =====================
 # Page config
-# =====================
 st.set_page_config(
     page_title="Electricity & Weather Dashboard",
     layout="wide"
@@ -15,16 +13,12 @@ st.set_page_config(
 
 st.title("⚡ Electricity consumption, weather & prediction")
 
-# =====================
 # Sidebar
-# =====================
 st.sidebar.header("Filters")
 
 zone = st.sidebar.selectbox("Zone", ["FR"])
 
-# =====================
 # Load real data
-# =====================
 params = {"zone": zone}
 
 with st.spinner("Loading real data..."):
@@ -38,9 +32,7 @@ if df.empty:
 
 df["ts_hour"] = pd.to_datetime(df["ts_hour"])
 
-# =====================
 # Load predictions
-# =====================
 pred_df = None
 start_pred = None
 
@@ -57,9 +49,7 @@ try:
 except Exception:
     pred_df = None
 
-# =====================
 # Merge real + pred
-# =====================
 if pred_df is not None and not pred_df.empty:
     df = df.merge(
         pred_df[["ts_hour", "load_pred"]],
@@ -70,9 +60,9 @@ if pred_df is not None and not pred_df.empty:
 else:
     st.warning("Predictions not available")
 
-# =====================
+
 # Select ONE prediction day
-# =====================
+
 if pred_df is not None and not pred_df.empty:
     pred_df["date"] = pred_df["ts_hour"].dt.date
     available_days = sorted(pred_df["date"].unique())
@@ -88,9 +78,9 @@ else:
     df_plot = df.copy()
     selected_day = df_plot["ts_hour"].dt.date.iloc[-1]
 
-# =====================
+
 # Day context (weekday, weather stats)
-# =====================
+
 day_dt = pd.to_datetime(selected_day)
 day_name = day_dt.day_name()
 is_weekend = day_dt.dayofweek >= 5
@@ -102,9 +92,7 @@ tmean = df_plot["temp_c"].mean()
 rain_total = df_plot["rain_mm"].sum()
 is_rainy = rain_total > 1.0
 
-# =====================
 # Day summary UI
-# =====================
 st.subheader(
     f"📅 {day_name} – {selected_day} "
     f"{'(Weekend)' if is_weekend else '(Weekday)'}"
@@ -121,9 +109,7 @@ if is_rainy:
 else:
     c4.metric("Rain", "No rain")
 
-# =====================
-# Plot – real vs prediction (clean)
-# =====================
+# Plot  real and prediction on same graph
 fig = go.Figure()
 
 # Real load
@@ -154,8 +140,6 @@ fig.update_layout(
 
 st.plotly_chart(fig, use_container_width=True)
 
-# =====================
 # Raw data
-# =====================
 with st.expander("Show raw data"):
     st.dataframe(df_plot)

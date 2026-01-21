@@ -11,7 +11,7 @@ spark = (
     .getOrCreate()
 )
 
-# ========= READ BRONZE ELECTRICITY =========
+# READ BRONZE ELECTRICITY
 elec = spark.read.parquet("/opt/lakehouse/bronze/electricity")
 
 elec_silver = (
@@ -21,7 +21,7 @@ elec_silver = (
     .select("zone", "ts_hour", "load_mw")
 )
 
-# 30min -> 1h (mean MW)
+# 30min -> 1h (mean)
 elec_1h = (
     elec_silver
     .groupBy("zone", "ts_hour")
@@ -33,7 +33,7 @@ elec_1h = (
 max_ts = elec_1h.select(spark_max("ts_hour")).collect()[0][0]
 elec_1h = elec_1h
 
-# ========= READ BRONZE WEATHER =========
+# READ BRONZE WEATHER 
 weather = spark.read.parquet("/opt/lakehouse/bronze/weather")
 
 weather_silver = (
@@ -45,7 +45,7 @@ weather_silver = (
 
 
 
-# ========= FEATURES =========
+#  FEATURES
 gold = (
     elec_1h.alias("e")
     .join(
@@ -66,7 +66,7 @@ gold = (
 
 gold = gold.filter(col("ts_hour").isNotNull())
 
-# ========= WRITE GOLD =========
+# WRITE GOLD 
 (
     gold.write
     .mode("overwrite")

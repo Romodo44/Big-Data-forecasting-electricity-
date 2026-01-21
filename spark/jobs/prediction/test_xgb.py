@@ -16,31 +16,35 @@ FEATURES = [
     "hour",
     "dayofweek",
     "month",
+    "is_weekend",
+    "is_winter",
 ]
 
-# ================= LOAD DATA =================
+#LOAD DATA
 df = pd.read_parquet(GOLD_PATH)
 df["ts_hour"] = pd.to_datetime(df["ts_hour"])
 df = df.sort_values("ts_hour")
 
-# ================= FEATURE ENGINEERING =================
+# FEATURE ENGINEERING
 df["hour"] = df["ts_hour"].dt.hour
 df["dayofweek"] = df["ts_hour"].dt.dayofweek
 df["month"] = df["ts_hour"].dt.month
+df["is_weekend"] = df["dayofweek"] >= 5
+df["is_winter"] = df["month"].isin([12, 1, 2])
 
 df = df.dropna(subset=FEATURES)
 
-# ================= LOAD MODEL =================
+#  LOAD MODEL
 model = joblib.load(MODEL_PATH)
 
-# ================= PREDICT =================
+#  PREDICT 
 df["load_pred"] = model.predict(df[FEATURES])
 
 # ⚠️ uniquement la partie "future"
 split_date = df["ts_hour"].quantile(0.8)
 df_pred = df[df["ts_hour"] > split_date]
 
-# ================= SAVE =================
+# SAVE 
 PRED_PATH.mkdir(parents=True, exist_ok=True)
 
 OUTPUT_FILE = PRED_PATH / "predictions.parquet"
